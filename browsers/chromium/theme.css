@@ -1,0 +1,20 @@
+:root {
+  color-scheme: dark;
+
+  --page-background: #1a1a2e;
+  --page-foreground: #e0e0e0;
+
+  --card-background: #2a2a3e;
+  --card-background-hover: #3a3a4e;
+  --card-foreground: #e0e0e0;
+
+  --accent: #7c4dff;
+  --accent-foreground: #ffffff;
+  --accent-container: #3a1f7a;
+  --accent-container-foreground: #ffffff;
+
+  --secondary: #bb86fc;
+  --outline: #444466;
+  --outline-muted: #333355;
+  --shadow-colour: rgba(0, 0, 0, 0.3);
+}

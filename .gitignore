@@ -1,0 +1,12 @@
+Helium-Chromium-Noctalia-Startpage-Plan.md
+
+# Editor and operating-system files
+.DS_Store
+*~
+.idea/
+.vscode/
+
+# Packaged extension artifacts
+*.crx
+*.pem
+*.zip
