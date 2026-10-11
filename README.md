@@ -64,6 +64,8 @@ mkdir -p "$HOME/.local/share/noctalia-startpage"
 cp noctalia/templates/browser-startpage.css \
   "$HOME/.config/noctalia/templates/"
 
+cp noctalia/noctalia-startpage.toml "$HOME/.config/noctalia/"
+
 cp -r browsers/vivaldi/. \
   "$HOME/.local/share/noctalia-startpage/"
 ```
@@ -154,6 +156,7 @@ lgl-browser-theming/
 │   ├── helium/
 │   └── vivaldi/
 ├── noctalia/
+│   ├── noctalia-startpage.toml
 │   └── templates/
 │       └── browser-startpage.css
 ├── INSTALL.md

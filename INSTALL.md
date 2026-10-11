@@ -43,8 +43,10 @@ lgl-browser-theming/
 │   ├── chromium/            # Chromium extension payload
 │   ├── helium/              # Helium extension payload
 │   └── vivaldi/             # Vivaldi extension payload
-├── noctalia/templates/
-│   └── browser-startpage.css
+├── noctalia/
+│   ├── noctalia-startpage.toml  # Wallpaper hook for TOML-based Noctalia
+│   └── templates/
+│       └── browser-startpage.css
 └── INSTALL.md
 ```
 
@@ -67,9 +69,9 @@ built-in Start Page when it is incorrectly used for an additional window.
 ## Install the Files
 
 Run these commands from the repository root. They create the destination
-directory, install the Noctalia template, and copy the complete Vivaldi
-payload. Replace `vivaldi` with `chromium` or `helium` to install a different
-browser payload.
+directory, install the Noctalia template and wallpaper hook, and copy the
+complete Vivaldi payload. Replace `vivaldi` with `chromium` or `helium` to
+install a different browser payload.
 
 ```bash
 mkdir -p "$HOME/.config/noctalia/templates"
@@ -77,6 +79,8 @@ mkdir -p "$HOME/.local/share/noctalia-startpage"
 
 cp noctalia/templates/browser-startpage.css \
   "$HOME/.config/noctalia/templates/"
+
+cp noctalia/noctalia-startpage.toml "$HOME/.config/noctalia/"
 
 cp -r browsers/vivaldi/. \
   "$HOME/.local/share/noctalia-startpage/"
@@ -100,22 +104,42 @@ The final directory should contain at least:
 ## Connect Noctalia to the Theme
 
 The template is not itself a CSS file that the browser can use. It contains
-placeholders and is rendered by your existing Noctalia setup. Do not change
-that setup for the clock and date colors. The browser-side output is expected
-at:
+placeholders that Noctalia must render whenever the wallpaper changes:
 
 ```text
 input:  ~/.config/noctalia/templates/browser-startpage.css
 output: ~/.local/share/noctalia-startpage/theme.css
 ```
 
-Then trigger a Noctalia theme or wallpaper refresh. Open `theme.css` and
-confirm that it contains real values such as `#3f4759`, not `{{ ... }}`.
+The `noctalia-startpage.toml` file copied in **Install the Files** does this.
+Noctalia merges every `*.toml` file in `~/.config/noctalia/` into its
+configuration, so no other setting needs to change. The file adds this hook:
 
-This checkout does not currently include a `render-theme.sh` script. Do not
-copy or run that command unless you have added a local renderer for it. The
-important requirement is that Noctalia writes the rendered CSS to the exact
-`theme.css` path above.
+```toml
+[hooks]
+wallpaper_changed = "$(command -v noctalia-kwe || command -v noctalia) theme \"$NOCTALIA_WALLPAPER_PATH\" -r \"$HOME/.config/noctalia/templates/browser-startpage.css:$HOME/.local/share/noctalia-startpage/theme.css\""
+```
+
+When the wallpaper changes, the hook generates a palette from the new image
+and renders the template to `theme.css`. It works with both the `noctalia`
+and `noctalia-kwe` binaries.
+
+Restart Noctalia, then confirm that the hook is active:
+
+```bash
+noctalia config export | grep -A1 '^\[hooks\]'
+```
+
+Use `noctalia-kwe` instead of `noctalia` in that command if that is the binary
+you have.
+
+If you already define `wallpaper_changed` in another TOML file, combine both
+commands into one hook separated by `;` instead of adding a second definition.
+
+### Check the Output
+
+Change the wallpaper once to render the first theme. Open `theme.css` and
+confirm that it contains real values such as `#3f4759`, not `{{ ... }}`.
 
 If `theme.css` is missing or still contains placeholders, the page will still
 open, but it will use the fallback colours from `styles.css` and will not be
@@ -183,12 +207,15 @@ keeps its own extension registration, while the files and generated
 
 ## Update the Theme
 
-When Noctalia changes the wallpaper or palette, have Noctalia render the
-template to:
+Each wallpaper change runs the hook from **Connect Noctalia to the Theme**,
+which renders the template to:
 
 ```text
 ~/.local/share/noctalia-startpage/theme.css
 ```
+
+Copying the browser files again replaces `theme.css` with the copy from the
+repository. Change the wallpaper afterwards to render the current palette.
 
 New tabs read the current file immediately. An already-open start page checks
 the file every two seconds, bypasses the browser cache, and keeps the previous
@@ -274,6 +301,12 @@ Check that `theme.css` exists, contains resolved hex colours, and is writable
 by the Noctalia renderer. The extension itself does not resolve the Noctalia
 placeholders.
 
+If `theme.css` never changes, confirm that `noctalia-startpage.toml` is in
+`~/.config/noctalia/` and that its hook appears in `noctalia config export`.
+
+The hook runs only when the wallpaper changes, so switching between light and
+dark mode alone may not update the page.
+
 ### Search does not work
 
 The search field uses `chrome.search.query()` and the manifest requests the
@@ -288,4 +321,5 @@ The search field uses `chrome.search.query()` and the manifest requests the
 ```bash
 rm -rf "$HOME/.local/share/noctalia-startpage"
 rm "$HOME/.config/noctalia/templates/browser-startpage.css"
+rm -f "$HOME/.config/noctalia/noctalia-startpage.toml"
 ```

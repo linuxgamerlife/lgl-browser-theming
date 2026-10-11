@@ -1,0 +1,6 @@
+# Noctalia Start Page hook for TOML-based Noctalia (noctalia / noctalia-kwe).
+# Noctalia merges every *.toml file in ~/.config/noctalia/, so copy this file
+# there unchanged. When the wallpaper changes, the template is rendered with
+# the new palette and written to the extension's theme.css.
+[hooks]
+wallpaper_changed = "$(command -v noctalia-kwe || command -v noctalia) theme \"$NOCTALIA_WALLPAPER_PATH\" -r \"$HOME/.config/noctalia/templates/browser-startpage.css:$HOME/.local/share/noctalia-startpage/theme.css\""

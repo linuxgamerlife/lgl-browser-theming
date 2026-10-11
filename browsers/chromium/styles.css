@@ -56,7 +56,7 @@ html, body {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  font-family: "Noto Sans", sans-serif;
   background-color: var(--page-background);
   color: var(--page-foreground);
   min-height: 100vh;
@@ -111,6 +111,7 @@ body {
   width: 100%;
   padding: 1rem 1.5rem;
   font-size: 1rem;
+  font-family: inherit;
   border: 2px solid var(--accent);
   border-radius: 12px;
   background-color: var(--card-background);
